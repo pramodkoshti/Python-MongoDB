@@ -1,0 +1,81 @@
+# import Libraries
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
+from time import sleep
+import requests
+import time
+from lxml import html
+from random import shuffle
+from pynput.keyboard import Key, Controller
+import pandas as pd
+import random
+import configparser
+import os
+import glob
+
+
+def main():    
+    config = configparser.ConfigParser()
+    config.read('./Data/Config.txt')
+    user_name = config['credentials']['username']
+    password = config['credentials']['password'] 
+    Login(user_name,password)
+
+
+def Login(email,password):    
+    chrome_options = webdriver.ChromeOptions()
+    prefs = {"profile.default_content_setting_values.notifications" : 2}
+    chrome_options.add_experimental_option("prefs",prefs)
+    driver = webdriver.Chrome(executable_path = './Data/chromedriver.exe',chrome_options=chrome_options)
+    driver.implicitly_wait(5)
+    driver.maximize_window()
+    driver.get('https://www.facebook.com/login/')
+    username_input = driver.find_element_by_id('email')
+    username_input.click()
+    username_input.send_keys(email)
+    password_input = driver.find_element_by_id('pass')
+    password_input.send_keys(password)
+    login_click = driver.find_element_by_xpath('//*[@id="loginbutton"]').click()
+    time.sleep(5)
+    accept_friend_requests()
+
+ def accept_friend_requests():
+    #Not needed
+    rqst_Mutualf_path = "//div[@class='clearfix _42ef' and .//span/a]//button[@class='_42ft _4jy0 _4jy3 _4jy1 selected _51sy']"
+    # rqst_Mutualf_path = "//div[@class='clearfix _42ef']//button[@class='_42ft _4jy0 _4jy3 _4jy1 selected _51sy']"
+    driver.get('https://www.facebook.com/friends/requests/?fcref=jwl')
+    wait.until(EC.presence_of_all_elements_located(
+        (By.XPATH, rqst_Mutualf_path)))
+    friend_requests = driver.find_elements_by_xpath(rqst_Mutualf_path)
+    totalRequests = len(friend_requests)
+    # shuffle(friend_requests)
+    if totalRequests > 5:
+        friend_requests = friend_requests[:3]
+    print("Total Friend Requests with Mutual Friends are: ", totalRequests)
+    i = 1
+    print("Accepting 5 Friend Requests..for testing purpose")
+    for req in friend_requests:
+        req.click()
+
+        timeDelay = random.randrange(5, 10)  # Change Delay###############
+        sleep(timeDelay)
+        print("Accepted Requests: ", i)
+        i += 1
+
+    print("Sucessfuly Accepted Available Requests.")
+
+
+[credentials]
+username : mariasong93@gmail.com
+password: fbbisnisfb93
+
+[friends_to_tag]
+friend_list : 'Akshay Ahire','Ameya Dahale'
+
+
